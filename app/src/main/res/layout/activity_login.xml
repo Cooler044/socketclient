@@ -51,14 +51,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/clearButton"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:onClick="ClearFields"/>
 
             <Button
                 android:text="Connect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/connectButton"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:onClick="Connect"/>
 
         </LinearLayout>
     </LinearLayout>
