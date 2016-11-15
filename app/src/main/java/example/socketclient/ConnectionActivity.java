@@ -8,12 +8,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 public class ConnectionActivity extends Activity {
 
     //Strings to register to create intent filter for registering the recivers
-    private static final String ACTION_STRING_SERVICE = "ToService";
-    private static final String ACTION_STRING_ACTIVITY = "ToActivity";
+    static final String ACTION_STRING_SEND_MESSAGE = "SendMessageToService";
+    static final String ACTION_STRING_ACTIVITY = "ToActivity";
     public final static String EXTRA_ADDRESS = "example.socketclient.ADDRESS";
     public final static String EXTRA_PORT = "example.socketclient.PORT";
 
@@ -53,14 +54,19 @@ public class ConnectionActivity extends Activity {
     }
 
     //send broadcast from activity to all receivers listening to the action "ACTION_STRING_SERVICE"
-    private void sendBroadcast() {
+    public void sendSendMessageBroadcast() {
+        EditText messageEditText = (EditText) findViewById(R.id.messageEditText);
+        String messageString =  messageEditText.getText().toString();
         Intent new_intent = new Intent();
-        new_intent.setAction(ACTION_STRING_SERVICE);
+        new_intent.putExtra("message", messageString);
+        new_intent.setAction(ACTION_STRING_SEND_MESSAGE);
         sendBroadcast(new_intent);
     }
 
-    public void SendMessage(View v) {
-        sendBroadcast();
+    public void sendMessageClicked(View view) {
+        EditText messageEditText = (EditText) findViewById(R.id.messageEditText);
+        messageEditText.setText("");
+        sendSendMessageBroadcast();
     }
 
     @Override

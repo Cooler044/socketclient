@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/SendButton"
             android:layout_margin="5dp"
-            android:onClick="SendMessage" />
+            android:onClick="sendMessageClicked" />
 
         <TextView
             android:layout_width="match_parent"
