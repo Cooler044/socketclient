@@ -65,8 +65,8 @@ public class ConnectionActivity extends Activity {
 
     public void sendMessageClicked(View view) {
         EditText messageEditText = (EditText) findViewById(R.id.messageEditText);
-        messageEditText.setText("");
         sendSendMessageBroadcast();
+        messageEditText.setText("");
     }
 
     @Override
@@ -75,5 +75,6 @@ public class ConnectionActivity extends Activity {
         Log.d("Service", "onDestroy");
         //STEP3: Unregister the receiver
         unregisterReceiver(activityReceiver);
+        stopService(new Intent(this, ConnectionService.class));
     }
 }

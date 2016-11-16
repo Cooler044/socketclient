@@ -31,6 +31,9 @@ public class ConnectionService extends Service {
     private String mAddress;
     private String mPort;
 
+    private sendMessageThread mSendMsgThread;
+    private connectionListenerThread mListenerThread;
+
     //STEP1: Create a broadcast receiver
     private BroadcastReceiver sendMessageReceiver = new BroadcastReceiver() {
 
@@ -80,6 +83,8 @@ public class ConnectionService extends Service {
         Log.d("Service", "onDestroy");
         //STEP3: Unregister the receiver
         unregisterReceiver(sendMessageReceiver);
+        mSendMsgThread.quit();
+        mListenerThread.terminate();
     }
 
     //send broadcast from activity to all receivers listening to the action "ACTION_STRING_ACTIVITY"
@@ -122,24 +127,26 @@ public class ConnectionService extends Service {
         }
     }
 
-    class connectionListener extends Thread {
+    class connectionListenerThread extends Thread {
+
+        boolean isRunning = true;
 
         public void run() {
             try {
-                while (true) {
+                while (isRunning) {
                     InetAddress serverAddr = InetAddress.getByName(mAddress);
                     mSock = new Socket(serverAddr, Integer.parseInt(mPort));
                     char[] data = new char[4096];
 
                     BufferedReader reader = new BufferedReader(new InputStreamReader(mSock.getInputStream()));
-                    int read = 0;
-                    while ((read = reader.read(data)) >= 0){
+                    int read;
+                    while ((read = reader.read(data)) >= 0 && isRunning){
                         //process message here
                         if(read > 0) Log.e("SocketClient", "Received packet: " + data);
                     }
 
                     reader.close();
-
+                    mSock.close();
                 }
             }
             catch (Exception ex) {
@@ -147,14 +154,18 @@ public class ConnectionService extends Service {
             }
         }
 
+        public void terminate(){
+            isRunning = false;
+        }
+
     }
 
     public void openConnection() {
-        sendMessageThread sendMsg = new sendMessageThread();
-        sendMsg.start();
-        sendMsg.prepareHandler();
+        mSendMsgThread = new sendMessageThread();
+        mSendMsgThread.start();
+        mSendMsgThread.prepareHandler();
 
-        connectionListener listener = new connectionListener();
-        listener.start();
+        mListenerThread = new connectionListenerThread();
+        mListenerThread.start();
     }
 }
